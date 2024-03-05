@@ -10,7 +10,7 @@ node ('App-Server-CWEB2140')
         snykSecurity(
             snykInstallation: 'Snyk',
             snykTokenId: 'Synkid',
-            severity: 'high'
+            severity: 'critical'
         )
         
     }
