@@ -5,6 +5,15 @@ node ('App-Server-CWEB2140')
         /* Let's make sure we have the repository cloned to our workspace */
        checkout scm
     }  
+
+    stage('Sny Security Test') {
+        snykSecurity(
+            snyKInstallation: 'Snyk',
+            snykTokenId: 'Snykid',
+            severity: 'high'
+        )
+        
+    }
    
     stage('Build-and-Tag') {
         /* This builds the actual image; 
