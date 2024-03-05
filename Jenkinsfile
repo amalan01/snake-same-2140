@@ -9,7 +9,7 @@ node ('App-Server-CWEB2140')
     stage('Sny Security Test') {
         snykSecurity(
             snyKInstallation: 'Snyk',
-            snykTokenId: 'Snykid',
+            snykTokenId: 'Synkid',
             severity: 'high'
         )
         
