@@ -1,4 +1,4 @@
-node('Sonarqube-Server-CWEB2140') {
+node('any') {
     stage('SonarQube Analysis') {
         def scannerHome = tool 'SonarQubeScanner';
         withSonarQubeEnv('sonarqube') {
