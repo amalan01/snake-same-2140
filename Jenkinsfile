@@ -21,7 +21,7 @@ node ('App-Server-CWEB2140')
       withSonarQubeEnv('sonarqube')
       {
       sh "${scannerHome}/bin/sonar-scanner -X \
-          Dsonar.projectKey=Snake_Game"
+          scannerHome.projectKey=Snake_Game"
       }
                     
      }
