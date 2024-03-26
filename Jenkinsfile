@@ -1,44 +1,77 @@
-node('App-Server-CWEB2140') {
-    def app
+pipeline {
+    agent none
+    
+    stages {
+        stage('CLONE GIT REPOSITORY') {
+            agent {
+                label 'App-Server-CWEB2140'
+            }
+            steps {
+                checkout scm
+            }
+        }  
 
-    stage('CLONE GIT REPOSITORY') {
-        /* Let's make sure we have the repository cloned to our workspace */
-        checkout scm
-    }  
-
-    stage('SCA-SAST-SNYK-TEST') {
-        snykSecurity(
-            snykInstallation: 'Snyk',
-            snykTokenId: 'Synkid',
-            severity: 'critical'
-        )
-    }
-
-    stage('BUILD-AND-TAG') {
-        /* This builds the actual image; 
-         * This is synonymous to docker build on the command line */
-        app = docker.build("amalan06/snake_game_2024")
-    }
-
-    stage('POST-TO-DOCKERHUB') {    
-        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
-            app.push("latest")
+        stage('SCA-SAST-SNYK-TEST') {
+            agent any
+            steps {
+                script {
+                    snykSecurity(
+                        snykInstallation: 'Snyk',
+                        snykTokenId: 'Synkid',
+                        severity: 'critical'
+                    )
+                }
+            }
         }
-    }
 
-    stage('DEPLOYMENT') {    
-        sh "docker-compose down"
-        sh "docker-compose up -d"   
-    }
-}
+        stage('SonarQube Analysis') {
+            agent {
+                label 'Sonarqube-Server-CWEB2140'
+            }
+            steps {
+                script {
+                    def scannerHome = tool 'SonarQubeScanner'
+                    withSonarQubeEnv('sonarqube') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=Snake_Game \
+                            -Dsonar.sources=."
+                    }
+                }
+            }
+        }
 
-node('Sonarqube-Server-CWEB2140') {
-    stage('SonarQube Analysis') {
-        def scannerHome = tool 'SonarQubeScanner';
-        withSonarQubeEnv('sonarqube') {
-            sh "${scannerHome}/bin/sonar-scanner \
-                -Dsonar.projectKey=Snake_Game \
-                -Dsonar.sources=."
+        stage('BUILD-AND-TAG') {
+            agent {
+                label 'App-Server-CWEB2140'
+            }
+            steps {
+                script {
+                    def app = docker.build("amalan06/snake_game_2024")
+                }
+            }
+        }
+
+        stage('POST-TO-DOCKERHUB') {    
+            agent {
+                label 'App-Server-CWEB2140'
+            }
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                        app.push("latest")
+                    }
+                }
+            }
+        }
+
+        stage('DEPLOYMENT') {    
+            agent {
+                label 'App-Server-CWEB2140'
+            }
+            steps {
+                sh "docker-compose down"
+                sh "docker-compose up -d"   
+            }
         }
     }
 }
