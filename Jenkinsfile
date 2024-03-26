@@ -14,6 +14,16 @@ node ('App-Server-CWEB2140')
         )
         
     }
+
+     stage('SonarQube Analysis') 
+     {
+      def scannerHome = tool 'SonarQubeScanner';
+      withSonarQubeEnv('SonarQube')
+      {
+      sh "${scannerHome}/bin/sonar-scanner"
+      }
+                    
+     }
    
     stage('BUILD-AND-TAG') {
         /* This builds the actual image; 
