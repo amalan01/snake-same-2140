@@ -20,7 +20,7 @@ node ('App-Server-CWEB2140')
       def scannerHome = tool 'SonarQubeScanner';
       withSonarQubeEnv('sonarqube')
       {
-      sh "${scannerHome}/bin/sonar-scanner \
+      sh "${scannerHome}/bin/sonar-scanner -X \
           Dsonar.projectKey=Snake_Game"
       }
                     
