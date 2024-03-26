@@ -1,5 +1,5 @@
-node ('App-Server-CWEB2140') 
-{  
+pipeline {
+    agent any 
     def app
     stage('CLONE GIT REPOSITORY') {
         /* Let's make sure we have the repository cloned to our workspace */
