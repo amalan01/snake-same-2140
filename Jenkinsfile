@@ -59,6 +59,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+                        def app = docker.image("amalan06/snake_game_2024")
                         app.push("latest")
                     }
                 }
