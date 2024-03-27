@@ -47,6 +47,7 @@ pipeline {
             steps {
                 script {
                     def app = docker.build("amalan06/snake_game_2024")
+                    app.tag("latest")
                 }
             }
         }
@@ -58,7 +59,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
-                        docker.push("latest")
+                        app.push("latest")
                     }
                 }
             }
